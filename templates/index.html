@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Certificate Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        table {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 80%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='mino-logo.png') }}" alt="MINO Logo" class="logo">
+    <h1>Certificate Lookup</h1>
+    <input type="text" id="searchInput" placeholder="Enter search keyword">
+    <button onclick="search()">Search</button>
+    
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>MOE Position</th>
+                <th>Certification Program</th>
+                <th>Certification Standard</th>
+                <th>Certification Date</th>
+                <th>Certificate Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 搜索结果将插入到这里 -->
+        </tbody>
+    </table>
+
+    <script>
+        async function search() {
+            const input = document.getElementById('searchInput').value;
+            const response = await fetch(`/search?query=${input}`);
+            const data = await response.json();
+
+            const resultTable = document.getElementById('resultTable').getElementsByTagName('tbody')[0];
+            resultTable.innerHTML = ''; // 清空上一次的搜索结果
+
+            if (data.length > 0) {
+                data.forEach(result => {
+                    const row = document.createElement('tr');
+                    
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = result.name;
+                    row.appendChild(nameCell);
+
+                    const positionCell = document.createElement('td');
+                    positionCell.textContent = result.moe_position;
+                    row.appendChild(positionCell);
+
+                    const programCell = document.createElement('td');
+                    programCell.textContent = result.certification_program;
+                    row.appendChild(programCell);
+
+                    const standardCell = document.createElement('td');
+                    standardCell.textContent = result.certification_standard;
+                    row.appendChild(standardCell);
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = result.certification_date;
+                    row.appendChild(dateCell);
+
+                    const numberCell = document.createElement('td');
+                    numberCell.textContent = result.certificate_number;
+                    row.appendChild(numberCell);
+
+                    resultTable.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                const cell = document.createElement('td');
+                cell.colSpan = 6;
+                cell.textContent = 'No certificates found';
+                row.appendChild(cell);
+                resultTable.appendChild(row);
+            }
+        }
+    </script>
+</body>
+</html>
